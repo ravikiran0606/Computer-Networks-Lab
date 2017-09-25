@@ -3,6 +3,8 @@
 #include<stdio.h>
 #include<string.h>
 #include<netinet/in.h>
+#include<arpa/inet.h>
+
 #define maxi 100
 
 struct msg{
@@ -21,21 +23,22 @@ int main(){
 
         struct sockaddr_in lns;
         lns.sin_family=AF_INET;
-        lns.sin_port=30191;
+        lns.sin_port=3019;
         lns.sin_addr.s_addr=inet_addr("127.0.0.1");
 
+        struct msg req,res;
+
         while(1){
-                printf("\nEnter the hostname : ");
-            	scanf("%s",buf);
-		if(strcmp(buf,"xxx")){
-			break;
-		}
-		struct msg req,res;
-		req.h_l=0;
-		strcpy(req.e_b,buf);
-                sendto(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,sizeof(lns));
-                recvfrom(sid,&res,sizeof(res),0,NULL,NULL);
-                printf("\nThe IP Addresss is : %s",res.e_b);
+            printf("\nEnter the hostname : ");
+            scanf("%s",buf);
+		    if(strcmp(buf,"xxx")){
+		       break;
+		    }
+    		req.h_l=0;
+    		strcpy(req.e_b,buf);
+            sendto(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,sizeof(lns));
+            //recvfrom(sid,&res,sizeof(res),0,NULL,NULL);
+            //printf("\nThe IP Addresss is : %s",res.e_b);
         }
         return 0;
 }

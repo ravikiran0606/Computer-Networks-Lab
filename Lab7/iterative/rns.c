@@ -2,15 +2,16 @@
 #include<sys/socket.h>
 #include<stdio.h>
 #include<netinet/in.h>
+#include<arpa/inet.h>
 #include<string.h>
 #define maxi 100
 
 // Root name Server :
 
 struct msg{
-        int h_l;
+    int h_l;
 	int p_n;
-        char e_b[maxi];
+    char e_b[maxi];
 };	
 
 struct det{
@@ -36,13 +37,30 @@ void populate(){
 
 struct msg getRes(struct msg req){
 	int i,j,k;
+	int n,m;
+	n=strlen(req.e_b);
+	int ff;
+	struct msg res;
+	res.h_l=1;
+	strcpy(res.e_b,req.e_b);
 	for(i=0;i<noofdet;i++){
-		for(k=0;req.e_b[k];k++){
-			for(j=0;table[i].name[j]!='\0';j++){
-			
+		m=strlen(table[i].name);
+		for(k=0;k<n;k++){
+			ff=0;
+			for(j=0;j<m;j++){
+				if(k+j>=n || req.e_b[k+j]!=table[i].name[j]){
+					ff=1;
+					break;
+				}
+			}
+			if(ff==0){
+				res.p_n=table[i].p_n;
+				goto next;
 			}
 		}		
-	}	
+	}
+	next:
+	return res;	
 }
 
 int main(){
@@ -52,26 +70,27 @@ int main(){
         struct sockaddr_storage lns;
 
         rns.sin_family=AF_INET;
-        rns.sin_port=3019;
+        rns.sin_port=30192;
         rns.sin_addr.s_addr=inet_addr("127.0.0.1");
 
         if(sid==-1){
-                printf("Error in Socket creation");
+                printf("\nError in Socket creation");
         }
 
-        bd=bind(sd,(struct sockaddr*)&server,sizeof(struct sockaddr));
+        bd=bind(sid,(struct sockaddr*)&rns,sizeof(struct sockaddr));
         if(bd==-1){
-                printf("bind failed..");
+                printf("\nBind failed..");
         }
         
-	struct msg req,res;
+        populate();
+		struct msg req,res;
 
         while(1){
-                recvfrom(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,&size);
-                printf("Got Request : %s",req.e_b);
-		res=getRes(req);
-                sendto(sid,&res,sizeof(res),0,(struct sockaddr *)&lns,size);
-		printf("Send Response : %s",);
+            recvfrom(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,&size);
+            printf("\nGot Request : %s",req.e_b);
+			res=getRes(req);
+            sendto(sid,&res,sizeof(res),0,(struct sockaddr *)&lns,size);
+			printf("\nSent Response : %d",res.p_n);
         }
         return 0;
 }

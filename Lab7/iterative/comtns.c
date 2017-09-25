@@ -55,7 +55,7 @@ int main(){
                 printf("Error in Socket creation");
         }
 
-        bd=bind(sd,(struct sockaddr*)&server,sizeof(struct sockaddr));
+        bd=bind(sid,(struct sockaddr*)&server,sizeof(struct sockaddr));
         if(bd==-1){
                 printf("bind failed..");
         }

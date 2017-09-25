@@ -3,35 +3,36 @@
 #include<stdio.h>
 #include<netinet/in.h>
 #include<string.h>
+#include<arpa/inet.h>
 #define maxi 100
 
 struct msg{
-        int h_l;
+    int h_l;
 	int p_n;
-        char e_b[maxi];
+    char e_b[maxi];
 };
 
 int main(){
-        int sid,sid2,sid3,sid4,bd,ld,csize,ad,len;
+    int sid,sid2,sid3,sid4,bd,ld,csize,ad,len;
 
 	// As a local name Server...
-        sid=socket(AF_INET,SOCK_DGRAM,0);
+    sid=socket(AF_INET,SOCK_DGRAM,0);
 
-	// As a client to DNS root server...
+	/*// As a client to DNS root server...
 	sid2=socket(AF_INET,SOCK_DGRAM,0);
 
-        // As a client to DNS tld server...
-        sid3=socket(AF_INET,SOCK_DGRAM,0);
+    // As a client to DNS tld server...
+    sid3=socket(AF_INET,SOCK_DGRAM,0);
 	
-        // As a client to DNS authoritative server...
-        sid4=socket(AF_INET,SOCK_DGRAM,0);
+    // As a client to DNS authoritative server...
+    sid4=socket(AF_INET,SOCK_DGRAM,0);*/
 
-        struct sockaddr_in lns,rns,tns,ans;
-        struct sockaddr_storage client;
+    struct sockaddr_in lns,rns,tns,ans;
+    struct sockaddr_storage client;
 
 	// local name server...
         lns.sin_family=AF_INET;
-        lns.sin_port=30191;
+        lns.sin_port=3019;
         lns.sin_addr.s_addr=inet_addr("127.0.0.1");
 
 	// root name server...
@@ -55,16 +56,17 @@ int main(){
 
         bd=bind(sid,(struct sockaddr*)&lns,sizeof(struct sockaddr));
         if(bd==-1){
-                printf("bind failed..");
+                printf("Bind failed..");
          }
         struct msg pre,preres,req1,res1,req2,res2,req3,res3;
-        while(1){
+
+    while(1){
 		
 		// Getting request from client...
-                recvfrom(sid,&pre,sizeof(pre),0,(struct sockaddr *)&client,&csize);
-                printf("\nGot request : %s",pre.e_b);
+        recvfrom(sid,&pre,sizeof(pre),0,(struct sockaddr *)&client,&csize);
+        printf("\nGot request : %s",pre.e_b);
        
-		// Connecting to DNS root server...
+		/*// Connecting to DNS root server...
 		req1.h_l=0;
 		strcpy(req1.e_b,pre.e_b);
 		sendto(sid2,&req1,sizeof(req1),0,(struct sockaddr *)&rns,sizeof(rns));
@@ -72,10 +74,10 @@ int main(){
 		
 		// Getting reply from DNS root server...
 		recvfrom(sid2,&res1,sizeof(res1),0,NULL,NULL);
-		printf("\nGot Response : %s",res1.e_b);
+		printf("\nGot Response : %d",res1.p_n);
 
 
-
+		/*
                 // Connecting to DNS tld server...
                 req2.h_l=0;
                 strcpy(req2.e_b,res1.e_b);
@@ -102,7 +104,9 @@ int main(){
 		preres.h_l=1;
 	        sendto(sid,&preres,sizeof(preres),0,(struct sockaddr *)&client,csize);
                 printf("\nSent response : %s",preres.e_b);
+                */
         }
+
         return 0;
 }
 

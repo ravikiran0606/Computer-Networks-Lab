@@ -56,7 +56,7 @@ int main(){
         }
 
         bd=bind(sd,(struct sockaddr*)&server,sizeof(struct sockaddr));
-        if(bd==-1){
+        if(bid==-1){
                 printf("bind failed..");
         }
         
