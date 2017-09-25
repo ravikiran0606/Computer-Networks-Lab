@@ -5,7 +5,7 @@
 #include<string.h>
 #define maxi 100
 
-// Root name Server :
+// Google authoritative name Server :
 
 struct msg{
         int h_l;
@@ -15,59 +15,68 @@ struct msg{
 
 struct det{
 	char name[maxi];
-	int p_n;
+	char ip[maxi];
 }table[maxi];
 
 int noofdet=0;
 
 void populate(){
 	
-	strcpy(table[0].name,"com");
-	table[0].p_n=30195;
+	strcpy(table[0].name,"www.google.com");
+	strcpy(table[0].ip,"216.58.220.36");
 	noofdet++;
 
-	strcpy(table[1].name,"edu");
-	table[1].p_n=30196;
+	strcpy(table[1].name,"www.googlemail.com");
+	strcpy(table[0].ip,"216.58.220.34");
 	noofdet++;
 
 
-	strcpy(table[2].name,"org");
-	table[2].p_n=30197;
+	strcpy(table[2].name,"www.onedrivegoogle.com");
+	strcpy(table[0].ip,"216.58.220.35");
 	noofdet++;
 }
 
 struct msg getRes(struct msg req){
 	int i;
-	
+	struct msg res;
+	res.h_l=1;
+	for(i=0;i<noofdet;i++){
+		if(strcmp(req.e_b,table[i].name)==0){
+			strcpy(res.e_b,table[i].ip);
+			break;
+		}
+	}	
+	return res;
 }
 
 int main(){
         int sid,bd,ld,size,ad,len;
         sid=socket(AF_INET,SOCK_DGRAM,0);
-        struct sockaddr_in rns;
+        struct sockaddr_in gans;
         struct sockaddr_storage lns;
 
-        rns.sin_family=AF_INET;
-        rns.sin_port=3019;
-        rns.sin_addr.s_addr=inet_addr("127.0.0.1");
+        gans.sin_family=AF_INET;
+        gans.sin_port=htons(30199);
+        gans.sin_addr.s_addr=inet_addr("127.0.0.1");
 
         if(sid==-1){
-                printf("Error in Socket creation");
+                printf("\n\n\n\nError in Socket creation");
         }
 
-        bd=bind(sd,(struct sockaddr*)&server,sizeof(struct sockaddr));
+        bd=bind(sid,(struct sockaddr*)&gans,sizeof(struct sockaddr));
         if(bd==-1){
-                printf("bind failed..");
+                printf("\n\n\n\nbind failed..");
         }
-        
+
+	populate();        
 	struct msg req,res;
 
         while(1){
                 recvfrom(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,&size);
-                printf("Got Request : %s",req.e_b);
+                printf("\n\n\n\nGot Request : %s",req.e_b);
 		res=getRes(req);
                 sendto(sid,&res,sizeof(res),0,(struct sockaddr *)&lns,size);
-		printf("Send Response : %s",);
+		printf("\n\n\n\nSend Response : %s",res.e_b);
         }
         return 0;
 }

@@ -23,22 +23,23 @@ int main(){
 
         struct sockaddr_in lns;
         lns.sin_family=AF_INET;
-        lns.sin_port=3019;
+        lns.sin_port=htons(3019);
         lns.sin_addr.s_addr=inet_addr("127.0.0.1");
 
         struct msg req,res;
 
         while(1){
-            printf("\nEnter the hostname : ");
+            printf("\n\n\n\nEnter the hostname : ");
             scanf("%s",buf);
-		    if(strcmp(buf,"xxx")){
+		    if(strcmp(buf,"xxx")==0){
 		       break;
 		    }
-    		req.h_l=0;
-    		strcpy(req.e_b,buf);
-            sendto(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,sizeof(lns));
-            //recvfrom(sid,&res,sizeof(res),0,NULL,NULL);
-            //printf("\nThe IP Addresss is : %s",res.e_b);
+    	    req.h_l=0;
+    	    strcpy(req.e_b,buf);
+	    int k=sendto(sid,&req,sizeof(req),0,(struct sockaddr *)&lns,sizeof(lns));
+	    printf("\n\nsend no %d",k);
+            recvfrom(sid,&res,sizeof(res),0,NULL,NULL);
+            printf("\n\n\n\nThe IP Addresss is : %s",res.e_b);
         }
         return 0;
 }
